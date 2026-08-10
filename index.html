@@ -4,1241 +4,467 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050510">
 
-<title>Neon Snake</title>
+<title>Snake Game</title>
 
 <style>
-
-/* =========================================================
-   NEON SNAKE
-   SINGLE FILE VERSION
-   ========================================================= */
-
-:root {
-    --bg: #050510;
-    --panel: rgba(10, 15, 30, .85);
-
-    --cyan: #00f7ff;
-    --green: #39ff88;
-    --purple: #a855ff;
-    --pink: #ff3cac;
-
-    --text: #f4f7ff;
-    --muted: #78829b;
-}
-
-
 /* =========================================================
    RESET
-   ========================================================= */
+========================================================= */
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --background: #05070b;
+    --board: #070c12;
+    --green: #39e879;
+    --green-light: #8affb5;
+    --green-dark: #128b48;
+    --cyan: #21d9ff;
+    --pink: #ff4f9a;
+    --white: #f5f7fa;
+    --muted: #727c8c;
 }
 
 
-html,
-body {
-    width: 100%;
-    min-height: 100%;
-}
-
+/* =========================================================
+   PAGE
+========================================================= */
 
 body {
     min-height: 100vh;
 
-    overflow-x: hidden;
-
-    font-family:
-        "Segoe UI",
-        Arial,
-        sans-serif;
-
-    color: var(--text);
-
     background:
         radial-gradient(
-            circle at 10% 10%,
-            rgba(0,247,255,.08),
-            transparent 30%
+            circle at 50% 0%,
+            rgba(33,217,255,.07),
+            transparent 35%
         ),
-        radial-gradient(
-            circle at 90% 90%,
-            rgba(168,85,255,.10),
-            transparent 30%
-        ),
-        var(--bg);
+        var(--background);
+
+    color: var(--white);
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
     display: flex;
     justify-content: center;
 
-    padding: 25px 15px;
+    padding:
+        14px 10px 20px;
+
+    overflow-x: hidden;
 }
 
-
-/* =========================================================
-   BACKGROUND EFFECTS
-   ========================================================= */
-
-.background {
-    position: fixed;
-    inset: 0;
-
-    overflow: hidden;
-
-    pointer-events: none;
-
-    z-index: -1;
-}
-
-
-.orb {
-    position: absolute;
-
-    width: clamp(180px, 28vw, 400px);
-
-    aspect-ratio: 1;
-
-    border-radius: 50%;
-
-    filter: blur(80px);
-
-    opacity: .13;
-
-    animation:
-        floatingOrb
-        10s ease-in-out infinite alternate;
-}
-
-
-.orb.one {
-    background: var(--cyan);
-
-    top: -15%;
-    left: -10%;
-}
-
-
-.orb.two {
-    background: var(--purple);
-
-    right: -10%;
-    bottom: -15%;
-
-    animation-delay: -4s;
-}
-
-
-.orb.three {
-    background: var(--pink);
-
-    width: 180px;
-
-    top: 45%;
-    left: 45%;
-
-    opacity: .06;
-
-    animation-delay: -7s;
-}
-
-
-.stars {
-    position: absolute;
-
-    inset: 0;
-
-    background-image:
-        radial-gradient(
-            circle,
-            rgba(255,255,255,.35) 1px,
-            transparent 1px
-        );
-
-    background-size: 70px 70px;
-
-    opacity: .07;
-}
-
-
-@keyframes floatingOrb {
-
-    from {
-        transform:
-            translate(0,0)
-            scale(1);
-    }
-
-    to {
-        transform:
-            translate(40px,-30px)
-            scale(1.12);
-    }
-}
-
-
-/* =========================================================
-   MAIN
-   ========================================================= */
-
-.game-container {
-    width: min(850px, 100%);
+.game {
+    width: min(720px, 100%);
 }
 
 
 /* =========================================================
    HEADER
-   ========================================================= */
+========================================================= */
 
-.game-header {
+.header {
     display: flex;
-
+    align-items: center;
     justify-content: space-between;
 
-    align-items: center;
+    gap: 15px;
 
-    gap: 20px;
-
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
-
-.brand {
+.title {
     display: flex;
-
     align-items: center;
-
-    gap: 13px;
+    gap: 9px;
 }
 
-
-.snake-icon {
-    width: 56px;
-    height: 56px;
+.title-icon {
+    width: 44px;
+    height: 44px;
 
     display: grid;
-
     place-items: center;
 
-    border-radius: 16px;
+    border-radius: 12px;
 
-    background:
-        rgba(0,247,255,.07);
+    background: #0b1510;
 
     border:
         1px solid
-        rgba(0,247,255,.35);
+        rgba(57,232,121,.3);
 
-    box-shadow:
-        0 0 8px rgba(0,247,255,.7),
-        0 0 25px rgba(0,247,255,.2);
-
-    font-size: 29px;
+    font-size: 23px;
 }
 
-
-h1 {
+.title h1 {
     font-size:
-        clamp(25px, 5vw, 40px);
+        clamp(23px, 5vw, 34px);
 
-    line-height: 1;
-
-    letter-spacing: 4px;
-
-    font-weight: 900;
-}
-
-
-h1 span {
-    color: var(--cyan);
-
-    text-shadow:
-        0 0 5px var(--cyan),
-        0 0 20px var(--cyan);
-}
-
-
-.brand p {
-    color: var(--muted);
-
-    font-size: 9px;
-
-    letter-spacing: 3px;
-
-    margin-top: 7px;
+    letter-spacing: 2px;
 }
 
 
 /* =========================================================
    SCORE
-   ========================================================= */
+========================================================= */
 
-.stats {
+.scores {
     display: flex;
-
-    gap: 10px;
+    gap: 7px;
 }
 
+.score {
+    min-width: 95px;
 
-.stat-card {
-    min-width: 125px;
+    padding: 7px 10px;
 
-    padding: 11px 17px;
+    text-align: center;
 
-    border-radius: 14px;
-
-    background:
-        var(--panel);
+    background: #0a0f17;
 
     border:
         1px solid
-        rgba(0,247,255,.18);
+        rgba(255,255,255,.08);
 
-    backdrop-filter: blur(12px);
-
-    text-align: center;
+    border-radius: 10px;
 }
 
-
-.stat-label {
+.score span {
     display: block;
 
     color: var(--muted);
 
-    font-size: 9px;
+    font-size: 8px;
 
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
-
-.stat-card strong {
-    font-size: 26px;
-
-    color: var(--cyan);
-
-    text-shadow:
-        0 0 5px var(--cyan),
-        0 0 15px rgba(0,247,255,.5);
-}
-
-
-.high-score strong {
+.score strong {
     color: var(--green);
 
-    text-shadow:
-        0 0 5px var(--green),
-        0 0 15px rgba(57,255,136,.5);
-}
-
-
-.score-pop {
-    animation:
-        scorePop
-        .3s ease;
-}
-
-
-@keyframes scorePop {
-
-    50% {
-        transform: scale(1.2);
-    }
+    font-size: 21px;
 }
 
 
 /* =========================================================
-   GAME AREA
-   ========================================================= */
+   GAME BOARD
+========================================================= */
 
-.game-area {
-    width: 100%;
-}
-
-
-/* =========================================================
-   BOARD
-   ========================================================= */
-
-.board-wrapper {
+.board {
     position: relative;
 
-    width:
-        min(
-            78vh,
-            700px,
-            100%
-        );
+    width: min(94vw, 620px);
 
-    aspect-ratio: 1;
+    aspect-ratio: 4 / 5;
 
     margin: auto;
 
-    padding: 5px;
+    border-radius: 16px;
 
-    border-radius: 22px;
+    padding: 3px;
 
     background:
         linear-gradient(
             135deg,
-            rgba(0,247,255,.55),
-            rgba(168,85,255,.4),
-            rgba(255,60,172,.4),
-            rgba(57,255,136,.4)
+            #17472c,
+            #0d3340
         );
 
     box-shadow:
-        0 0 25px rgba(0,247,255,.15),
-        0 0 70px rgba(168,85,255,.08);
+        0 15px 40px rgba(0,0,0,.55);
 }
-
-
-.board-wrapper::before {
-
-    content: "";
-
-    position: absolute;
-
-    inset: -3px;
-
-    z-index: -1;
-
-    border-radius: 24px;
-
-    background:
-        linear-gradient(
-            90deg,
-            var(--cyan),
-            var(--purple),
-            var(--pink),
-            var(--green),
-            var(--cyan)
-        );
-
-    background-size: 300% 100%;
-
-    filter: blur(5px);
-
-    opacity: .3;
-
-    animation:
-        borderAnimation
-        8s linear infinite;
-}
-
-
-@keyframes borderAnimation {
-
-    to {
-        background-position: 300% 0;
-    }
-}
-
 
 canvas {
-
     width: 100%;
     height: 100%;
 
     display: block;
 
-    border-radius: 17px;
+    background: var(--board);
 
-    background: #020712;
+    border-radius: 13px;
 
     touch-action: none;
 }
 
 
 /* =========================================================
-   OVERLAY
-   ========================================================= */
+   GAME OVER
+========================================================= */
 
-.game-overlay {
-
+.game-over {
     position: absolute;
 
-    inset: 5px;
+    inset: 3px;
 
-    border-radius: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     background:
-        radial-gradient(
-            circle,
-            rgba(5,10,25,.5),
-            rgba(2,6,18,.92)
-        );
+        rgba(2,5,8,.94);
 
-    backdrop-filter: blur(5px);
-
-    display: grid;
-
-    place-items: center;
-
-    z-index: 5;
-
-    transition:
-        opacity .3s ease,
-        visibility .3s ease;
-}
-
-
-.game-overlay.hidden {
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-}
-
-
-.overlay-content {
+    border-radius: 13px;
 
     text-align: center;
-
-    padding: 20px;
 }
 
+.game-over.hidden {
+    display: none;
+}
 
-.overlay-icon {
+.game-over h2 {
+    color: var(--pink);
 
     font-size:
-        clamp(45px, 8vw, 75px);
+        clamp(28px, 8vw, 45px);
 
-    margin-bottom: 8px;
-
-    filter:
-        drop-shadow(
-            0 0 8px
-            var(--green)
-        )
-        drop-shadow(
-            0 0 25px
-            rgba(57,255,136,.5)
-        );
-
-    animation:
-        snakeFloat
-        2s ease-in-out infinite;
+    margin-bottom: 7px;
 }
 
+.game-over p {
+    color: var(--muted);
 
-@keyframes snakeFloat {
-
-    50% {
-        transform:
-            translateY(-8px)
-            rotate(-3deg);
-    }
+    font-size: 14px;
 }
 
-
-.overlay-content h2 {
-
-    font-size:
-        clamp(28px, 6vw, 50px);
-
-    letter-spacing: 5px;
-
-    color: var(--cyan);
-
-    text-shadow:
-        0 0 5px var(--cyan),
-        0 0 20px var(--cyan);
-
-    margin-bottom: 8px;
-}
-
-
-.overlay-content p {
-
-    color: #aab3ca;
-
-    font-size: 13px;
-
-    margin-bottom: 18px;
+.game-over strong {
+    color: var(--green);
 }
 
 
 /* =========================================================
-   DIRECTION CONTROLLER
-   ========================================================= */
+   DIRECTION CONTROLS
+========================================================= */
 
-.mobile-controls {
-
-    width:
-        min(
-            250px,
-            80vw
-        );
+.direction-controls {
+    width: 215px;
 
     margin:
-        20px auto 0;
+        10px auto 0;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
+}
+
+.direction-row {
+    display: flex;
+
+    gap: 7px;
+
+    margin:
+        7px 0;
+}
+
+.direction {
+    width: 60px;
+    height: 52px;
+
+    border:
+        1px solid
+        rgba(33,217,255,.2);
+
+    border-radius: 12px;
+
+    background: #090f17;
+
+    color: var(--cyan);
+
+    font-size: 19px;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color:
+        transparent;
 
     user-select: none;
 }
 
-
-.middle-controls {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    margin: 10px 0;
-}
-
-
-.direction-btn {
-
-    width:
-        clamp(
-            58px,
-            17vw,
-            72px
-        );
-
-    height:
-        clamp(
-            58px,
-            17vw,
-            72px
-        );
-
-    border-radius: 19px;
-
-    border:
-        1px solid
-        rgba(0,247,255,.32);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(16,27,48,.96),
-            rgba(5,11,25,.96)
-        );
-
-    color: var(--cyan);
-
-    font-size: 22px;
-
-    cursor: pointer;
-
-    box-shadow:
-        inset 0 0 18px
-        rgba(0,247,255,.04),
-
-        0 6px 18px
-        rgba(0,0,0,.35);
-
-    transition:
-        transform .1s ease,
-        box-shadow .15s ease,
-        border-color .15s ease;
-
-    -webkit-tap-highlight-color:
-        transparent;
-}
-
-
-.direction-btn:hover {
-
-    border-color:
-        rgba(0,247,255,.7);
-
-    box-shadow:
-        0 0 10px
-        rgba(0,247,255,.25);
-}
-
-
-.direction-btn:active {
-
-    transform:
-        scale(.88);
+.direction:active {
+    transform: scale(.9);
 
     border-color:
         var(--cyan);
-
-    box-shadow:
-        0 0 8px var(--cyan),
-        0 0 22px
-        rgba(0,247,255,.5);
 }
 
-
-.direction-btn.center {
-
+.center {
     color: var(--green);
-
-    border-color:
-        rgba(57,255,136,.3);
 
     cursor: default;
 }
 
 
-.direction-btn.center span {
-
-    font-size: 12px;
-
-    text-shadow:
-        0 0 8px var(--green);
-}
-
-
 /* =========================================================
-   START / PAUSE / RESTART
-   ========================================================= */
+   ACTION BUTTONS
+========================================================= */
 
-.action-buttons {
+.actions {
+    display: flex;
 
-    display: grid;
+    justify-content: center;
 
-    grid-template-columns:
-        repeat(3, 1fr);
+    gap: 12px;
 
-    gap: 10px;
-
-    width: min(600px, 100%);
-
-    margin:
-        18px auto 0;
+    margin-top: 13px;
 }
 
+.action {
+    width: 56px;
+    height: 46px;
 
-.neon-button {
+    border:
+        1px solid
+        rgba(255,255,255,.1);
 
-    min-height: 48px;
+    border-radius: 11px;
 
-    border-radius: 12px;
+    background: #0a0f17;
 
-    background:
-        rgba(10,15,30,.88);
-
-    font-weight: 800;
-
-    letter-spacing: 1.5px;
+    font-size: 20px;
 
     cursor: pointer;
-
-    transition:
-        transform .15s ease,
-        box-shadow .2s ease,
-        background .2s ease;
 }
 
-
-.neon-button:hover {
-
-    transform:
-        translateY(-2px);
+.action:active {
+    transform: scale(.88);
 }
 
-
-.neon-button:active {
-
-    transform:
-        scale(.96);
+.start {
+    color: var(--green);
 }
 
-
-.primary {
-
+.pause {
     color: var(--cyan);
-
-    border:
-        1px solid
-        var(--cyan);
 }
 
-
-.primary:hover {
-
-    background:
-        rgba(0,247,255,.08);
-
-    box-shadow:
-        0 0 8px var(--cyan),
-        0 0 20px
-        rgba(0,247,255,.4);
-}
-
-
-.secondary {
-
-    color: #c58cff;
-
-    border:
-        1px solid
-        var(--purple);
-}
-
-
-.secondary:hover {
-
-    background:
-        rgba(168,85,255,.08);
-
-    box-shadow:
-        0 0 12px
-        rgba(168,85,255,.5);
-}
-
-
-.danger {
-
-    color: #ff77ba;
-
-    border:
-        1px solid
-        var(--pink);
-}
-
-
-.danger:hover {
-
-    background:
-        rgba(255,60,172,.08);
-
-    box-shadow:
-        0 0 12px
-        rgba(255,60,172,.5);
-}
-
-
-.mobile-hint {
-
-    text-align: center;
-
-    color: var(--muted);
-
-    font-size: 9px;
-
-    letter-spacing: 1.5px;
-
-    margin-top: 10px;
+.restart {
+    color: var(--pink);
 }
 
 
 /* =========================================================
-   DESKTOP CONTROLS INFO
-   ========================================================= */
+   RESPONSIVE
+========================================================= */
 
-.keyboard-hint {
+@media (max-width: 650px) {
 
-    display: flex;
-
-    justify-content: center;
-
-    gap: 8px;
-
-    margin-top: 12px;
-
-    color: var(--muted);
-
-    font-size: 9px;
-
-    letter-spacing: 1px;
-}
-
-
-kbd {
-
-    min-width: 27px;
-
-    height: 27px;
-
-    padding: 0 7px;
-
-    display: inline-grid;
-
-    place-items: center;
-
-    border-radius: 7px;
-
-    border:
-        1px solid
-        rgba(0,247,255,.2);
-
-    background: #070c19;
-
-    color: var(--cyan);
-
-    font-weight: 800;
-}
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
-
-footer {
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    color: #3d465d;
-
-    font-size: 9px;
-
-    letter-spacing: 2px;
-
-    margin-top: 15px;
-}
-
-
-/* =========================================================
-   TABLET
-   ========================================================= */
-
-@media (max-width: 700px) {
-
-    body {
-        padding:
-            18px 10px 25px;
-    }
-
-
-    .game-header {
-
+    .header {
         flex-direction: column;
-
-        gap: 15px;
     }
 
-
-    .brand {
-
-        justify-content: center;
-    }
-
-
-    .stats {
-
+    .scores {
         width: 100%;
 
         justify-content: center;
     }
 
-
-    .stat-card {
-
+    .score {
         flex: 1;
 
-        max-width: 170px;
-    }
-
-
-    .board-wrapper {
-
-        width:
-            min(
-                92vw,
-                650px
-            );
-    }
-
-
-    .keyboard-hint {
-
-        display: none;
+        max-width: 150px;
     }
 }
-
-
-/* =========================================================
-   MOBILE
-   ========================================================= */
 
 @media (max-width: 480px) {
 
     body {
-
         padding:
-            12px 8px 20px;
+            9px 6px 15px;
     }
 
+    .board {
+        width: 96vw;
 
-    .snake-icon {
-
-        width: 48px;
-        height: 48px;
-
-        font-size: 25px;
+        aspect-ratio: 4 / 5;
     }
 
-
-    h1 {
-
-        font-size: 26px;
-
-        letter-spacing: 3px;
+    .direction {
+        width: 57px;
+        height: 50px;
     }
 
-
-    .brand p {
-
-        font-size: 8px;
-
-        letter-spacing: 2px;
-    }
-
-
-    .stat-card {
-
-        padding:
-            9px 10px;
-
-        min-width: 0;
-    }
-
-
-    .stat-card strong {
-
-        font-size: 22px;
-    }
-
-
-    .board-wrapper {
-
-        width: 94vw;
-
-        padding: 4px;
-
-        border-radius: 18px;
-    }
-
-
-    .game-overlay {
-
-        inset: 4px;
-    }
-
-
-    .mobile-controls {
-
-        margin-top: 18px;
-    }
-
-
-    .direction-btn {
-
-        width: 62px;
-
-        height: 62px;
-
-        border-radius: 17px;
-    }
-
-
-    .action-buttons {
-
-        grid-template-columns:
-            1fr;
-
-        gap: 8px;
-
-        margin-top: 16px;
-    }
-
-
-    .neon-button {
-
-        min-height: 50px;
+    .action {
+        width: 54px;
+        height: 45px;
     }
 }
-
-
-/* =========================================================
-   VERY SMALL PHONES
-   ========================================================= */
 
 @media (max-width: 350px) {
 
-    .direction-btn {
-
-        width: 56px;
-
-        height: 56px;
+    .direction {
+        width: 51px;
+        height: 47px;
     }
 
-
-    .middle-controls {
-
-        gap: 7px;
-    }
-
-
-    .mobile-controls {
-
-        width: 210px;
+    .direction-controls {
+        width: 185px;
     }
 }
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-
-        animation-duration:
-            .01ms !important;
-
-        animation-iteration-count:
-            1 !important;
-    }
-}
-
 </style>
 </head>
 
 
 <body>
 
-
-<!-- BACKGROUND -->
-
-<div class="background">
-
-    <div class="orb one"></div>
-
-    <div class="orb two"></div>
-
-    <div class="orb three"></div>
-
-    <div class="stars"></div>
-
-</div>
+<div class="game">
 
 
-<main class="game-container">
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
+    <div class="header">
 
-<!-- =====================================================
-     HEADER
-     ===================================================== -->
+        <div class="title">
 
-<header class="game-header">
-
-    <div class="brand">
-
-        <div class="snake-icon">
-            🐍
-        </div>
-
-        <div>
+            <div class="title-icon">
+                🐍
+            </div>
 
             <h1>
-                NEON <span>SNAKE</span>
+                SNAKE GAME
             </h1>
 
-            <p>
-                RETRO // FUTURE ARCADE
-            </p>
-
-        </div>
-
-    </div>
-
-
-    <div class="stats">
-
-        <div class="stat-card">
-
-            <span class="stat-label">
-                SCORE
-            </span>
-
-            <strong id="score">
-                0
-            </strong>
-
         </div>
 
 
-        <div class="stat-card high-score">
+        <div class="scores">
 
-            <span class="stat-label">
-                HIGH SCORE
-            </span>
+            <div class="score">
 
-            <strong id="highScore">
-                0
-            </strong>
+                <span>
+                    SCORE
+                </span>
 
-        </div>
+                <strong id="score">
+                    0
+                </strong>
 
-    </div>
-
-</header>
+            </div>
 
 
+            <div class="score">
 
-<!-- =====================================================
-     GAME
-     ===================================================== -->
+                <span>
+                    HIGH SCORE
+                </span>
 
-<section class="game-area">
-
-
-    <!-- GAME SCREEN -->
-
-    <div class="board-wrapper">
-
-        <canvas id="gameCanvas"></canvas>
-
-
-        <!-- OVERLAY -->
-
-        <div
-            id="gameOverlay"
-            class="game-overlay"
-        >
-
-            <div class="overlay-content">
-
-                <div class="overlay-icon">
-                    🐍
-                </div>
-
-                <h2 id="overlayTitle">
-                    READY?
-                </h2>
-
-                <p id="overlayMessage">
-                    Press START to begin your run
-                </p>
-
-                <button
-                    id="overlayButton"
-                    class="neon-button primary"
-                >
-                    START GAME
-                </button>
+                <strong id="highScore">
+                    0
+                </strong>
 
             </div>
 
@@ -1248,41 +474,76 @@ footer {
 
 
 
-    <!-- =================================================
-         DIRECTION BUTTONS
-         ================================================= -->
+    <!-- =====================================================
+         GAME
+    ====================================================== -->
 
-    <div class="mobile-controls">
+    <div class="board">
+
+        <canvas id="canvas"></canvas>
+
+
+        <div
+            id="gameOver"
+            class="game-over hidden"
+        >
+
+            <div>
+
+                <h2>
+                    GAME OVER
+                </h2>
+
+                <p>
+                    Score:
+                    <strong id="finalScore">
+                        0
+                    </strong>
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DIRECTION CONTROLS
+    ====================================================== -->
+
+    <div class="direction-controls">
 
         <button
-            class="direction-btn"
-            data-direction="up"
+            class="direction"
+            data-dir="up"
         >
             ▲
         </button>
 
 
-        <div class="middle-controls">
+        <div class="direction-row">
 
             <button
-                class="direction-btn"
-                data-direction="left"
+                class="direction"
+                data-dir="left"
             >
                 ◀
             </button>
 
 
             <button
-                class="direction-btn center"
+                class="direction center"
                 type="button"
             >
-                <span>●</span>
+                ●
             </button>
 
 
             <button
-                class="direction-btn"
-                data-direction="right"
+                class="direction"
+                data-dir="right"
             >
                 ▶
             </button>
@@ -1291,8 +552,8 @@ footer {
 
 
         <button
-            class="direction-btn"
-            data-direction="down"
+            class="direction"
+            data-dir="down"
         >
             ▼
         </button>
@@ -1301,253 +562,150 @@ footer {
 
 
 
-    <!-- =================================================
-         START / PAUSE / RESTART
-         ================================================= -->
+    <!-- =====================================================
+         ACTION BUTTONS
+    ====================================================== -->
 
-    <div class="action-buttons">
+    <div class="actions">
 
         <button
-            id="startBtn"
-            class="neon-button primary"
+            id="start"
+            class="action start"
+            aria-label="Start"
         >
-            ▶ START
+            ▶
         </button>
 
 
         <button
-            id="pauseBtn"
-            class="neon-button secondary"
+            id="pause"
+            class="action pause"
+            aria-label="Pause"
         >
-            Ⅱ PAUSE
+            Ⅱ
         </button>
 
 
         <button
-            id="restartBtn"
-            class="neon-button danger"
+            id="restart"
+            class="action restart"
+            aria-label="Restart"
         >
-            ↻ RESTART
+            ↻
         </button>
 
     </div>
 
-
-    <div class="mobile-hint">
-        SWIPE THE SCREEN OR USE THE CONTROLS
-    </div>
-
-
-    <!-- DESKTOP KEYBOARD HINT -->
-
-    <div class="keyboard-hint">
-
-        <span>
-            Keyboard:
-        </span>
-
-        <kbd>W</kbd>
-        <kbd>A</kbd>
-        <kbd>S</kbd>
-        <kbd>D</kbd>
-
-        <span>
-            or Arrow Keys
-        </span>
-
-    </div>
-
-</section>
-
-
-
-<footer>
-
-    <span>
-        NEON SNAKE
-    </span>
-
-    <span>
-        •
-    </span>
-
-    <span>
-        VANILLA JS ARCADE
-    </span>
-
-</footer>
-
-
-</main>
+</div>
 
 
 
 <script>
 
 /* =========================================================
-   NEON SNAKE GAME
-   ========================================================= */
-
-
-/* =========================================================
-   ELEMENTS
-   ========================================================= */
+   CANVAS
+========================================================= */
 
 const canvas =
-    document.getElementById(
-        "gameCanvas"
-    );
+    document.getElementById("canvas");
 
 const ctx =
     canvas.getContext("2d");
 
 
-const scoreElement =
-    document.getElementById(
-        "score"
-    );
+/* =========================================================
+   UI
+========================================================= */
 
-const highScoreElement =
-    document.getElementById(
-        "highScore"
-    );
+const scoreText =
+    document.getElementById("score");
 
+const highScoreText =
+    document.getElementById("highScore");
 
-const startBtn =
-    document.getElementById(
-        "startBtn"
-    );
+const finalScore =
+    document.getElementById("finalScore");
 
-const pauseBtn =
-    document.getElementById(
-        "pauseBtn"
-    );
+const gameOverScreen =
+    document.getElementById("gameOver");
 
-const restartBtn =
-    document.getElementById(
-        "restartBtn"
-    );
+const startButton =
+    document.getElementById("start");
 
+const pauseButton =
+    document.getElementById("pause");
 
-const gameOverlay =
-    document.getElementById(
-        "gameOverlay"
-    );
-
-const overlayTitle =
-    document.getElementById(
-        "overlayTitle"
-    );
-
-const overlayMessage =
-    document.getElementById(
-        "overlayMessage"
-    );
-
-const overlayButton =
-    document.getElementById(
-        "overlayButton"
-    );
+const restartButton =
+    document.getElementById("restart");
 
 
 /* =========================================================
-   CONFIG
-   ========================================================= */
+   GAME GRID
+========================================================= */
 
-const GRID_SIZE = 30;
-
-const INITIAL_SPEED = 135;
-
-const MIN_SPEED = 55;
-
-const SPEED_STEP = 5;
-
-const SCORE_PER_FOOD = 10;
+const COLUMNS = 20;
+const ROWS = 25;
 
 
 /* =========================================================
-   GAME STATE
-   ========================================================= */
+   GAME VARIABLES
+========================================================= */
 
-let snake = [];
+let snake;
 
-let food = {
-    x: 0,
-    y: 0
-};
+let food;
 
+let direction;
 
-let direction = {
-    x: 1,
-    y: 0
-};
-
-
-let nextDirection = {
-    x: 1,
-    y: 0
-};
-
+let nextDirection;
 
 let score = 0;
-
 
 let highScore =
     Number(
         localStorage.getItem(
-            "neonSnakeHighScore"
+            "snakeHighScore"
         )
     ) || 0;
 
+let running = false;
 
-let gameRunning = false;
+let paused = false;
 
-let gamePaused = false;
+let ended = false;
 
-let gameOver = false;
+let interval;
 
-let gameTimer = null;
-
-
-let currentSpeed =
-    INITIAL_SPEED;
-
-
-let canvasSize = 0;
-
-let cellSize = 0;
-
-
-/* Particles */
-
-let particles = [];
-
-
-/* Swipe */
-
-let touchStartX = 0;
-
-let touchStartY = 0;
+let speed = 125;
 
 
 /* =========================================================
-   CANVAS RESIZE
-   ========================================================= */
+   CANVAS SIZE
+========================================================= */
 
-function resizeCanvas() {
+let width = 0;
+let height = 0;
+
+let cellW = 0;
+let cellH = 0;
+
+
+/* =========================================================
+   TOUCH
+========================================================= */
+
+let touchX = 0;
+let touchY = 0;
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+function resize() {
 
     const rect =
         canvas.getBoundingClientRect();
-
-
-    const size =
-        Math.floor(
-            Math.min(
-                rect.width,
-                rect.height
-            )
-        );
-
 
     const ratio =
         Math.min(
@@ -1555,19 +713,14 @@ function resizeCanvas() {
             2
         );
 
+    width = rect.width;
+    height = rect.height;
 
     canvas.width =
-        size * ratio;
+        width * ratio;
 
     canvas.height =
-        size * ratio;
-
-
-    canvasSize = size;
-
-    cellSize =
-        size / GRID_SIZE;
-
+        height * ratio;
 
     ctx.setTransform(
         ratio,
@@ -1578,47 +731,59 @@ function resizeCanvas() {
         0
     );
 
+    cellW =
+        width / COLUMNS;
+
+    cellH =
+        height / ROWS;
 
     draw();
 }
 
-
 window.addEventListener(
     "resize",
-    resizeCanvas
+    resize
 );
 
 
 /* =========================================================
-   INITIALIZE
-   ========================================================= */
+   NEW GAME
+========================================================= */
 
-function initializeGame() {
+function newGame() {
 
-    const center =
-        Math.floor(
-            GRID_SIZE / 2
-        );
+    const x =
+        Math.floor(COLUMNS / 2);
+
+    const y =
+        Math.floor(ROWS / 2);
 
 
     /*
-     * More segments make the snake
-     * look more natural immediately.
+     * IMPORTANT:
+     * The snake starts long and horizontal.
+     * This makes it impossible to miss.
      */
 
-    snake = [];
+    snake = [
 
-    for (
-        let i = 0;
-        i < 7;
-        i++
-    ) {
+        { x: x,     y: y },
 
-        snake.push({
-            x: center - i,
-            y: center
-        });
-    }
+        { x: x - 1, y: y },
+
+        { x: x - 2, y: y },
+
+        { x: x - 3, y: y },
+
+        { x: x - 4, y: y },
+
+        { x: x - 5, y: y },
+
+        { x: x - 6, y: y },
+
+        { x: x - 7, y: y }
+
+    ];
 
 
     direction = {
@@ -1635,23 +800,29 @@ function initializeGame() {
 
     score = 0;
 
-    currentSpeed =
-        INITIAL_SPEED;
+    speed = 125;
+
+    running = false;
+
+    paused = false;
+
+    ended = false;
 
 
-    gameRunning = false;
-
-    gamePaused = false;
-
-    gameOver = false;
+    clearInterval(interval);
 
 
-    particles = [];
+    pauseButton.textContent = "Ⅱ";
+
+
+    gameOverScreen.classList.add(
+        "hidden"
+    );
 
 
     createFood();
 
-    updateUI();
+    updateScore();
 
     draw();
 }
@@ -1659,65 +830,100 @@ function initializeGame() {
 
 /* =========================================================
    START
-   ========================================================= */
+========================================================= */
 
 function startGame() {
 
-    if (gameOver) {
+    if (ended) {
 
-        initializeGame();
+        newGame();
     }
 
 
+    if (running) {
+        return;
+    }
+
+
+    running = true;
+
+    paused = false;
+
+
+    clearInterval(interval);
+
+
+    interval =
+        setInterval(
+            update,
+            speed
+        );
+}
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function togglePause() {
+
     if (
-        gameRunning &&
-        !gamePaused
+        !running ||
+        ended
     ) {
         return;
     }
 
 
-    gameRunning = true;
-
-    gamePaused = false;
-
-
-    hideOverlay();
+    paused =
+        !paused;
 
 
-    pauseBtn.innerHTML =
-        "Ⅱ PAUSE";
+    if (paused) {
 
+        clearInterval(interval);
 
-    startGameLoop();
+        pauseButton.textContent =
+            "▶";
+
+    } else {
+
+        interval =
+            setInterval(
+                update,
+                speed
+            );
+
+        pauseButton.textContent =
+            "Ⅱ";
+    }
 }
 
 
 /* =========================================================
-   GAME LOOP
-   ========================================================= */
+   RESTART
+========================================================= */
 
-function startGameLoop() {
+function restartGame() {
 
-    clearInterval(
-        gameTimer
-    );
+    clearInterval(interval);
 
+    newGame();
 
-    gameTimer =
-        setInterval(
-            gameTick,
-            currentSpeed
-        );
+    startGame();
 }
 
 
-function gameTick() {
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update() {
 
     if (
-        !gameRunning ||
-        gamePaused ||
-        gameOver
+        !running ||
+        paused ||
+        ended
     ) {
         return;
     }
@@ -1741,67 +947,96 @@ function gameTick() {
     };
 
 
-    /* WALL */
+    /* WALL COLLISION */
 
     if (
         head.x < 0 ||
-        head.x >= GRID_SIZE ||
+        head.x >= COLUMNS ||
         head.y < 0 ||
-        head.y >= GRID_SIZE
+        head.y >= ROWS
     ) {
 
-        endGame();
+        gameOver();
 
         return;
     }
 
 
-    /* BODY */
+    /*
+     * SELF COLLISION
+     */
 
-    const collision =
-        snake.some(
-            (segment, index) => {
+    for (
+        let i = 0;
+        i < snake.length - 1;
+        i++
+    ) {
 
-                /*
-                 * Ignore tail because
-                 * it moves away.
-                 */
+        if (
+            snake[i].x === head.x &&
+            snake[i].y === head.y
+        ) {
 
-                if (
-                    index ===
-                    snake.length - 1
-                ) {
-                    return false;
-                }
+            gameOver();
 
-
-                return (
-                    segment.x === head.x &&
-                    segment.y === head.y
-                );
-            }
-        );
-
-
-    if (collision) {
-
-        endGame();
-
-        return;
+            return;
+        }
     }
 
 
     snake.unshift(head);
 
 
-    /* FOOD */
+    /*
+     * FOOD
+     */
 
     if (
         head.x === food.x &&
         head.y === food.y
     ) {
 
-        eatFood();
+        score += 10;
+
+        if (
+            score > highScore
+        ) {
+
+            highScore = score;
+
+            localStorage.setItem(
+                "snakeHighScore",
+                highScore
+            );
+        }
+
+
+        createFood();
+
+
+        /*
+         * Increase speed slowly.
+         */
+
+        speed =
+            Math.max(
+                65,
+                125 -
+                Math.floor(score / 50) * 6
+            );
+
+
+        clearInterval(interval);
+
+
+        interval =
+            setInterval(
+                update,
+                speed
+            );
+
+
+        updateScore();
 
     } else {
 
@@ -1809,304 +1044,126 @@ function gameTick() {
     }
 
 
-    updateParticles();
-
-    updateUI();
-
     draw();
 }
 
 
 /* =========================================================
    FOOD
-   ========================================================= */
+========================================================= */
 
 function createFood() {
 
-    let valid = false;
-
-
-    while (!valid) {
+    do {
 
         food = {
 
             x:
                 Math.floor(
                     Math.random() *
-                    GRID_SIZE
+                    COLUMNS
                 ),
 
             y:
                 Math.floor(
                     Math.random() *
-                    GRID_SIZE
+                    ROWS
                 )
 
         };
 
-
-        valid =
-            !snake.some(
-                segment =>
-                    segment.x === food.x &&
-                    segment.y === food.y
-            );
-    }
-}
-
-
-function eatFood() {
-
-    score +=
-        SCORE_PER_FOOD;
-
-
-    if (
-        score >
-        highScore
-    ) {
-
-        highScore =
-            score;
-
-
-        localStorage.setItem(
-            "neonSnakeHighScore",
-            highScore
-        );
-    }
-
-
-    createParticles(
-        food.x * cellSize +
-        cellSize / 2,
-
-        food.y * cellSize +
-        cellSize / 2
+    } while (
+        snake.some(
+            part =>
+                part.x === food.x &&
+                part.y === food.y
+        )
     );
-
-
-    createFood();
-
-
-    increaseDifficulty();
-
-
-    scoreElement.classList.remove(
-        "score-pop"
-    );
-
-
-    void scoreElement.offsetWidth;
-
-
-    scoreElement.classList.add(
-        "score-pop"
-    );
-
-
-    updateUI();
 }
 
 
 /* =========================================================
-   DIFFICULTY
-   ========================================================= */
+   SCORE
+========================================================= */
 
-function increaseDifficulty() {
+function updateScore() {
 
-    const level =
-        Math.floor(
-            score / 50
-        );
-
-
-    currentSpeed =
-        Math.max(
-            MIN_SPEED,
-
-            INITIAL_SPEED -
-            level * SPEED_STEP
-        );
-
-
-    if (
-        gameRunning &&
-        !gamePaused
-    ) {
-
-        startGameLoop();
-    }
-}
-
-
-/* =========================================================
-   UI
-   ========================================================= */
-
-function updateUI() {
-
-    scoreElement.textContent =
+    scoreText.textContent =
         score;
 
-    highScoreElement.textContent =
+    highScoreText.textContent =
         highScore;
 }
 
 
 /* =========================================================
-   PAUSE
-   ========================================================= */
-
-function togglePause() {
-
-    if (
-        !gameRunning ||
-        gameOver
-    ) {
-        return;
-    }
-
-
-    gamePaused =
-        !gamePaused;
-
-
-    if (gamePaused) {
-
-        pauseBtn.innerHTML =
-            "▶ RESUME";
-
-
-        showOverlay(
-            "PAUSED",
-            "Your snake is waiting...",
-            "RESUME"
-        );
-
-    } else {
-
-        pauseBtn.innerHTML =
-            "Ⅱ PAUSE";
-
-
-        hideOverlay();
-
-
-        startGameLoop();
-    }
-}
-
-
-/* =========================================================
    GAME OVER
-   ========================================================= */
+========================================================= */
 
-function endGame() {
+function gameOver() {
 
-    gameRunning = false;
+    running = false;
 
-    gamePaused = false;
+    ended = true;
 
-    gameOver = true;
-
-
-    clearInterval(
-        gameTimer
-    );
+    clearInterval(interval);
 
 
-    showOverlay(
-        "GAME OVER",
-        `Final score: ${score}`,
-        "PLAY AGAIN"
-    );
-}
+    finalScore.textContent =
+        score;
 
 
-/* =========================================================
-   RESTART
-   ========================================================= */
-
-function restartGame() {
-
-    clearInterval(
-        gameTimer
-    );
-
-
-    initializeGame();
-
-    startGame();
-}
-
-
-/* =========================================================
-   OVERLAY
-   ========================================================= */
-
-function showOverlay(
-    title,
-    message,
-    buttonText
-) {
-
-    overlayTitle.textContent =
-        title;
-
-    overlayMessage.textContent =
-        message;
-
-    overlayButton.textContent =
-        buttonText;
-
-
-    gameOverlay.classList.remove(
-        "hidden"
-    );
-}
-
-
-function hideOverlay() {
-
-    gameOverlay.classList.add(
+    gameOverScreen.classList.remove(
         "hidden"
     );
 }
 
 
 /* =========================================================
-   DIRECTION
-   ========================================================= */
+   CHANGE DIRECTION
+========================================================= */
 
-function changeDirection(
-    newDirection
+function setDirection(
+    x,
+    y
 ) {
 
     /*
-     * Prevent reverse direction.
+     * Never allow an instant
+     * 180-degree turn.
      */
 
     if (
-        newDirection.x ===
-            -direction.x &&
-
-        newDirection.y ===
-            -direction.y
+        x === -direction.x &&
+        y === -direction.y
     ) {
-
         return;
     }
 
 
-    nextDirection =
-        newDirection;
+    /*
+     * Also prevent two direction
+     * changes before the next move.
+     */
+
+    if (
+        x === -nextDirection.x &&
+        y === -nextDirection.y
+    ) {
+        return;
+    }
+
+
+    nextDirection = {
+        x: x,
+        y: y
+    };
 }
 
 
 /* =========================================================
    KEYBOARD
-   ========================================================= */
+========================================================= */
 
 document.addEventListener(
     "keydown",
@@ -2116,132 +1173,82 @@ document.addEventListener(
             event.key.toLowerCase();
 
 
-        const directions = {
-
-            arrowup: {
-                x: 0,
-                y: -1
-            },
-
-            w: {
-                x: 0,
-                y: -1
-            },
-
-            arrowdown: {
-                x: 0,
-                y: 1
-            },
-
-            s: {
-                x: 0,
-                y: 1
-            },
-
-            arrowleft: {
-                x: -1,
-                y: 0
-            },
-
-            a: {
-                x: -1,
-                y: 0
-            },
-
-            arrowright: {
-                x: 1,
-                y: 0
-            },
-
-            d: {
-                x: 1,
-                y: 0
-            }
-        };
-
-
-        if (key === " ") {
-
-            event.preventDefault();
-
-            togglePause();
-
-            return;
-        }
-
-
         if (
-            directions[key]
+            key === "arrowup" ||
+            key === "w"
         ) {
 
             event.preventDefault();
 
-
-            if (
-                !gameRunning &&
-                !gameOver
-            ) {
-
-                startGame();
-            }
-
-
-            if (!gameOver) {
-
-                changeDirection(
-                    directions[key]
-                );
-            }
+            setDirection(
+                0,
+                -1
+            );
         }
-    }
-);
 
 
-/* =========================================================
-   BUTTONS
-   ========================================================= */
+        else if (
+            key === "arrowdown" ||
+            key === "s"
+        ) {
 
-startBtn.addEventListener(
-    "click",
-    startGame
-);
+            event.preventDefault();
 
-
-pauseBtn.addEventListener(
-    "click",
-    togglePause
-);
+            setDirection(
+                0,
+                1
+            );
+        }
 
 
-restartBtn.addEventListener(
-    "click",
-    restartGame
-);
+        else if (
+            key === "arrowleft" ||
+            key === "a"
+        ) {
+
+            event.preventDefault();
+
+            setDirection(
+                -1,
+                0
+            );
+        }
 
 
-overlayButton.addEventListener(
-    "click",
-    () => {
+        else if (
+            key === "arrowright" ||
+            key === "d"
+        ) {
 
-        if (gamePaused) {
+            event.preventDefault();
+
+            setDirection(
+                1,
+                0
+            );
+        }
+
+
+        else if (
+            key === " "
+        ) {
+
+            event.preventDefault();
 
             togglePause();
-
-        } else {
-
-            restartGame();
         }
+
     }
 );
 
 
 /* =========================================================
-   MOBILE DIRECTION BUTTONS
-   ========================================================= */
+   DIRECTION BUTTONS
+========================================================= */
 
 document
     .querySelectorAll(
-        ".direction-btn[data-direction]"
+        ".direction[data-dir]"
     )
     .forEach(button => {
 
@@ -2252,49 +1259,53 @@ document
                 event.preventDefault();
 
 
-                const name =
-                    button.dataset.direction;
-
-
-                const directions = {
-
-                    up: {
-                        x: 0,
-                        y: -1
-                    },
-
-                    down: {
-                        x: 0,
-                        y: 1
-                    },
-
-                    left: {
-                        x: -1,
-                        y: 0
-                    },
-
-                    right: {
-                        x: 1,
-                        y: 0
-                    }
-                };
+                const dir =
+                    button.dataset.dir;
 
 
                 if (
-                    !gameRunning &&
-                    !gameOver
+                    dir === "up"
                 ) {
 
-                    startGame();
-                }
-
-
-                if (!gameOver) {
-
-                    changeDirection(
-                        directions[name]
+                    setDirection(
+                        0,
+                        -1
                     );
                 }
+
+
+                else if (
+                    dir === "down"
+                ) {
+
+                    setDirection(
+                        0,
+                        1
+                    );
+                }
+
+
+                else if (
+                    dir === "left"
+                ) {
+
+                    setDirection(
+                        -1,
+                        0
+                    );
+                }
+
+
+                else if (
+                    dir === "right"
+                ) {
+
+                    setDirection(
+                        1,
+                        0
+                    );
+                }
+
             }
         );
     });
@@ -2302,7 +1313,7 @@ document
 
 /* =========================================================
    SWIPE CONTROLS
-   ========================================================= */
+========================================================= */
 
 canvas.addEventListener(
     "touchstart",
@@ -2311,11 +1322,10 @@ canvas.addEventListener(
         const touch =
             event.changedTouches[0];
 
-
-        touchStartX =
+        touchX =
             touch.clientX;
 
-        touchStartY =
+        touchY =
             touch.clientY;
 
     },
@@ -2332,29 +1342,21 @@ canvas.addEventListener(
         const touch =
             event.changedTouches[0];
 
-
         const dx =
             touch.clientX -
-            touchStartX;
-
+            touchX;
 
         const dy =
             touch.clientY -
-            touchStartY;
-
-
-        const minimum = 25;
+            touchY;
 
 
         if (
-            Math.abs(dx) < minimum &&
-            Math.abs(dy) < minimum
+            Math.abs(dx) < 25 &&
+            Math.abs(dy) < 25
         ) {
             return;
         }
-
-
-        let newDirection;
 
 
         if (
@@ -2362,49 +1364,16 @@ canvas.addEventListener(
             Math.abs(dy)
         ) {
 
-            newDirection =
-                dx > 0
-
-                    ? {
-                        x: 1,
-                        y: 0
-                    }
-
-                    : {
-                        x: -1,
-                        y: 0
-                    };
+            setDirection(
+                dx > 0 ? 1 : -1,
+                0
+            );
 
         } else {
 
-            newDirection =
-                dy > 0
-
-                    ? {
-                        x: 0,
-                        y: 1
-                    }
-
-                    : {
-                        x: 0,
-                        y: -1
-                    };
-        }
-
-
-        if (
-            !gameRunning &&
-            !gameOver
-        ) {
-
-            startGame();
-        }
-
-
-        if (!gameOver) {
-
-            changeDirection(
-                newDirection
+            setDirection(
+                0,
+                dy > 0 ? 1 : -1
             );
         }
 
@@ -2416,12 +1385,838 @@ canvas.addEventListener(
 
 
 /* =========================================================
+   DRAW BACKGROUND
+========================================================= */
+
+function drawBackground() {
+
+    ctx.fillStyle =
+        "#070c12";
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+}
+
+
+/* =========================================================
+   DRAW GRID
+========================================================= */
+
+function drawGrid() {
+
+    ctx.strokeStyle =
+        "rgba(33,217,255,.045)";
+
+    ctx.lineWidth = .5;
+
+
+    for (
+        let x = 0;
+        x <= COLUMNS;
+        x++
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x * cellW,
+            0
+        );
+
+        ctx.lineTo(
+            x * cellW,
+            height
+        );
+
+        ctx.stroke();
+    }
+
+
+    for (
+        let y = 0;
+        y <= ROWS;
+        y++
+    ) {
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            0,
+            y * cellH
+        );
+
+        ctx.lineTo(
+            width,
+            y * cellH
+        );
+
+        ctx.stroke();
+    }
+}
+
+
+/* =========================================================
+   DRAW FOOD
+========================================================= */
+
+function drawFood() {
+
+    const x =
+        food.x * cellW +
+        cellW / 2;
+
+    const y =
+        food.y * cellH +
+        cellH / 2;
+
+
+    const r =
+        Math.min(
+            cellW,
+            cellH
+        ) * .28;
+
+
+    ctx.save();
+
+
+    ctx.fillStyle =
+        "#ff4f9a";
+
+    ctx.shadowColor =
+        "#ff4f9a";
+
+    ctx.shadowBlur = 13;
+
+
+    /*
+     * Apple-like food shape
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x - r * .25,
+        y,
+        r * .75,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.arc(
+        x + r * .25,
+        y,
+        r * .75,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+     * Stem
+     */
+
+    ctx.shadowBlur = 0;
+
+    ctx.strokeStyle =
+        "#8affb5";
+
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x,
+        y - r * .65
+    );
+
+    ctx.lineTo(
+        x + r * .15,
+        y - r
+    );
+
+    ctx.stroke();
+
+
+    ctx.restore();
+}
+
+
+/* =========================================================
+   DRAW SNAKE
+========================================================= */
+
+function drawSnake() {
+
+    /*
+     * The snake is NOT made from circles.
+     *
+     * We draw a continuous thick path.
+     * This creates one connected body.
+     */
+
+    if (
+        snake.length < 2
+    ) {
+        return;
+    }
+
+
+    const points =
+        snake.map(
+            segment => ({
+
+                x:
+                    segment.x *
+                    cellW +
+                    cellW / 2,
+
+                y:
+                    segment.y *
+                    cellH +
+                    cellH / 2
+
+            })
+        );
+
+
+    const bodyWidth =
+        Math.min(
+            cellW,
+            cellH
+        ) * .64;
+
+
+    /* -----------------------------------------------------
+       OUTER BODY
+    ----------------------------------------------------- */
+
+    ctx.save();
+
+    ctx.lineCap =
+        "round";
+
+    ctx.lineJoin =
+        "round";
+
+    ctx.strokeStyle =
+        "#118a47";
+
+    ctx.lineWidth =
+        bodyWidth + 4;
+
+
+    ctx.shadowColor =
+        "rgba(57,232,121,.35)";
+
+    ctx.shadowBlur = 7;
+
+
+    ctx.beginPath();
+
+
+    /*
+     * Start at tail and travel
+     * toward the head.
+     */
+
+    ctx.moveTo(
+        points[points.length - 1].x,
+        points[points.length - 1].y
+    );
+
+
+    for (
+        let i =
+            points.length - 2;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        ctx.lineTo(
+            points[i].x,
+            points[i].y
+        );
+    }
+
+
+    ctx.stroke();
+
+
+    /* -----------------------------------------------------
+       MAIN BODY
+    ----------------------------------------------------- */
+
+    ctx.shadowBlur = 0;
+
+    ctx.strokeStyle =
+        "#31d976";
+
+    ctx.lineWidth =
+        bodyWidth;
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        points[points.length - 1].x,
+        points[points.length - 1].y
+    );
+
+
+    for (
+        let i =
+            points.length - 2;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        ctx.lineTo(
+            points[i].x,
+            points[i].y
+        );
+    }
+
+
+    ctx.stroke();
+
+
+    /* -----------------------------------------------------
+       BODY HIGHLIGHT
+    ----------------------------------------------------- */
+
+    ctx.strokeStyle =
+        "rgba(157,255,191,.32)";
+
+    ctx.lineWidth =
+        bodyWidth * .22;
+
+    ctx.lineCap =
+        "round";
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        points[points.length - 1].x,
+        points[points.length - 1].y -
+        bodyWidth * .08
+    );
+
+
+    for (
+        let i =
+            points.length - 2;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        ctx.lineTo(
+            points[i].x,
+            points[i].y -
+            bodyWidth * .08
+        );
+    }
+
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+
+    /*
+     * Draw tail separately.
+     * This makes the end narrower.
+     */
+
+    drawTail(points);
+
+
+    /*
+     * Draw head on top.
+     */
+
+    drawHead(points[0]);
+}
+
+
+/* =========================================================
+   TAIL
+========================================================= */
+
+function drawTail(points) {
+
+    if (
+        points.length < 2
+    ) {
+        return;
+    }
+
+
+    const tail =
+        points[points.length - 1];
+
+    const beforeTail =
+        points[points.length - 2];
+
+
+    const angle =
+        Math.atan2(
+            tail.y - beforeTail.y,
+            tail.x - beforeTail.x
+        );
+
+
+    const length =
+        Math.min(
+            cellW,
+            cellH
+        ) * .55;
+
+
+    const baseWidth =
+        Math.min(
+            cellW,
+            cellH
+        ) * .58;
+
+
+    const tip = {
+
+        x:
+            tail.x +
+            Math.cos(angle) *
+            length,
+
+        y:
+            tail.y +
+            Math.sin(angle) *
+            length
+
+    };
+
+
+    ctx.save();
+
+
+    ctx.fillStyle =
+        "#31d976";
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        tail.x +
+        Math.cos(angle + Math.PI / 2) *
+        baseWidth / 2,
+
+        tail.y +
+        Math.sin(angle + Math.PI / 2) *
+        baseWidth / 2
+    );
+
+
+    ctx.lineTo(
+        tail.x +
+        Math.cos(angle - Math.PI / 2) *
+        baseWidth / 2,
+
+        tail.y +
+        Math.sin(angle - Math.PI / 2) *
+        baseWidth / 2
+    );
+
+
+    ctx.lineTo(
+        tip.x,
+        tip.y
+    );
+
+
+    ctx.closePath();
+
+    ctx.fill();
+
+
+    ctx.restore();
+}
+
+
+/* =========================================================
+   HEAD
+========================================================= */
+
+function drawHead(point) {
+
+    const radius =
+        Math.min(
+            cellW,
+            cellH
+        ) * .48;
+
+
+    const x =
+        point.x;
+
+    const y =
+        point.y;
+
+
+    /*
+     * Head extends slightly forward
+     * depending on direction.
+     */
+
+    const forward =
+        Math.min(
+            cellW,
+            cellH
+        ) * .13;
+
+
+    const hx =
+        x +
+        direction.x *
+        forward;
+
+    const hy =
+        y +
+        direction.y *
+        forward;
+
+
+    ctx.save();
+
+
+    /*
+     * Head gradient.
+     */
+
+    const gradient =
+        ctx.createRadialGradient(
+            hx - radius * .3,
+            hy - radius * .35,
+            radius * .1,
+
+            hx,
+            hy,
+            radius
+        );
+
+
+    gradient.addColorStop(
+        0,
+        "#baffd0"
+    );
+
+    gradient.addColorStop(
+        .4,
+        "#55ed8a"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#13914b"
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+
+    ctx.shadowColor =
+        "rgba(57,232,121,.55)";
+
+    ctx.shadowBlur = 9;
+
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        hx,
+        hy,
+        radius * 1.05,
+        radius * .88,
+        Math.atan2(
+            direction.y,
+            direction.x
+        ),
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.shadowBlur = 0;
+
+
+    drawEyes(
+        hx,
+        hy,
+        radius
+    );
+
+
+    /*
+     * Small tongue.
+     */
+
+    drawTongue(
+        hx,
+        hy,
+        radius
+    );
+
+
+    ctx.restore();
+}
+
+
+/* =========================================================
+   EYES
+========================================================= */
+
+function drawEyes(
+    x,
+    y,
+    radius
+) {
+
+    let sideX =
+        -direction.y;
+
+    let sideY =
+        direction.x;
+
+
+    const eyeForward =
+        radius * .38;
+
+    const eyeSide =
+        radius * .38;
+
+
+    const eyes = [
+
+        {
+            x:
+                x +
+                direction.x *
+                eyeForward +
+                sideX *
+                eyeSide,
+
+            y:
+                y +
+                direction.y *
+                eyeForward +
+                sideY *
+                eyeSide
+        },
+
+        {
+            x:
+                x +
+                direction.x *
+                eyeForward -
+                sideX *
+                eyeSide,
+
+            y:
+                y +
+                direction.y *
+                eyeForward -
+                sideY *
+                eyeSide
+        }
+
+    ];
+
+
+    eyes.forEach(
+        eye => {
+
+            ctx.fillStyle =
+                "#ffffff";
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                eye.x,
+                eye.y,
+                radius * .19,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+
+
+            ctx.fillStyle =
+                "#111111";
+
+
+            ctx.beginPath();
+
+            ctx.arc(
+                eye.x +
+                direction.x *
+                radius *
+                .04,
+
+                eye.y +
+                direction.y *
+                radius *
+                .04,
+
+                radius * .095,
+
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fill();
+        }
+    );
+}
+
+
+/* =========================================================
+   TONGUE
+========================================================= */
+
+function drawTongue(
+    x,
+    y,
+    radius
+) {
+
+    const startX =
+        x +
+        direction.x *
+        radius *
+        .92;
+
+    const startY =
+        y +
+        direction.y *
+        radius *
+        .92;
+
+
+    const endX =
+        x +
+        direction.x *
+        radius *
+        1.35;
+
+    const endY =
+        y +
+        direction.y *
+        radius *
+        1.35;
+
+
+    const sideX =
+        -direction.y;
+
+    const sideY =
+        direction.x;
+
+
+    ctx.strokeStyle =
+        "#ff4f9a";
+
+    ctx.lineWidth = 1.5;
+
+    ctx.lineCap =
+        "round";
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        startX,
+        startY
+    );
+
+    ctx.lineTo(
+        endX,
+        endY
+    );
+
+    ctx.stroke();
+
+
+    /*
+     * Forked tongue.
+     */
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        endX,
+        endY
+    );
+
+    ctx.lineTo(
+        endX +
+        sideX *
+        radius *
+        .22,
+
+        endY +
+        sideY *
+        radius *
+        .22
+    );
+
+    ctx.moveTo(
+        endX,
+        endY
+    );
+
+    ctx.lineTo(
+        endX -
+        sideX *
+        radius *
+        .22,
+
+        endY -
+        sideY *
+        radius *
+        .22
+    );
+
+    ctx.stroke();
+}
+
+
+/* =========================================================
    DRAW EVERYTHING
-   ========================================================= */
+========================================================= */
 
 function draw() {
 
-    if (!canvasSize) {
+    if (
+        width <= 0 ||
+        height <= 0
+    ) {
         return;
     }
 
@@ -2433,1014 +2228,38 @@ function draw() {
     drawFood();
 
     drawSnake();
-
-    drawParticles();
 }
 
 
 /* =========================================================
-   BOARD BACKGROUND
-   ========================================================= */
-
-function drawBackground() {
-
-    const gradient =
-        ctx.createRadialGradient(
-            canvasSize * .5,
-            canvasSize * .4,
-            0,
-
-            canvasSize * .5,
-            canvasSize * .5,
-            canvasSize * .8
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "#081827"
-    );
-
-
-    gradient.addColorStop(
-        .55,
-        "#030a16"
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "#02040b"
-    );
-
-
-    ctx.fillStyle =
-        gradient;
-
-
-    ctx.fillRect(
-        0,
-        0,
-        canvasSize,
-        canvasSize
-    );
-}
-
-
-/* =========================================================
-   GRID
-   ========================================================= */
-
-function drawGrid() {
-
-    ctx.save();
-
-    ctx.lineWidth = .5;
-
-
-    for (
-        let i = 0;
-        i <= GRID_SIZE;
-        i++
-    ) {
-
-        const position =
-            i * cellSize;
-
-
-        ctx.strokeStyle =
-            i % 5 === 0
-
-                ? "rgba(0,247,255,.09)"
-
-                : "rgba(0,247,255,.025)";
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            position,
-            0
-        );
-
-        ctx.lineTo(
-            position,
-            canvasSize
-        );
-
-        ctx.stroke();
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            0,
-            position
-        );
-
-        ctx.lineTo(
-            canvasSize,
-            position
-        );
-
-        ctx.stroke();
-    }
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   FOOD
-   ========================================================= */
-
-function drawFood() {
-
-    const x =
-        food.x * cellSize +
-        cellSize / 2;
-
-
-    const y =
-        food.y * cellSize +
-        cellSize / 2;
-
-
-    const pulse =
-        1 +
-        Math.sin(
-            performance.now() / 150
-        ) * .1;
-
-
-    ctx.save();
-
-
-    ctx.shadowColor =
-        "#ff3cac";
-
-    ctx.shadowBlur =
-        25;
-
-
-    /*
-     * Outer energy glow
-     */
-
-    ctx.fillStyle =
-        "#ff3cac";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x,
-        y,
-        cellSize * .28 * pulse,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /*
-     * Bright center
-     */
-
-    ctx.shadowBlur = 5;
-
-    ctx.fillStyle =
-        "#ffffff";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x - cellSize * .07,
-        y - cellSize * .07,
-        cellSize * .075,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /*
-     * Energy ring
-     */
-
-    ctx.strokeStyle =
-        "rgba(255,60,172,.35)";
-
-    ctx.lineWidth = 1.5;
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x,
-        y,
-        cellSize * .43,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.stroke();
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   REALISTIC / SMOOTH SNAKE
-   ========================================================= */
-
-function drawSnake() {
-
-    if (!snake.length) {
-        return;
-    }
-
-
-    /*
-     * Draw the body as one continuous
-     * smooth curved path.
-     *
-     * This removes the old square-block
-     * appearance.
-     */
-
-    drawSmoothSnakeBody();
-
-
-    /*
-     * Draw body highlights.
-     */
-
-    drawSnakeHighlights();
-
-
-    /*
-     * Draw the head separately.
-     */
-
-    drawSnakeHead();
-}
-
-
-/* =========================================================
-   SMOOTH SNAKE BODY
-   ========================================================= */
-
-function drawSmoothSnakeBody() {
-
-    if (snake.length < 2) {
-        return;
-    }
-
-
-    ctx.save();
-
-
-    const points =
-        snake.map(segment => ({
-
-            x:
-                segment.x *
-                cellSize +
-                cellSize / 2,
-
-            y:
-                segment.y *
-                cellSize +
-                cellSize / 2
-
-        }));
-
-
-    /*
-     * Create a thick smooth path.
-     */
-
-    ctx.beginPath();
-
-
-    ctx.moveTo(
-        points[0].x,
-        points[0].y
-    );
-
-
-    for (
-        let i = 1;
-        i < points.length - 1;
-        i++
-    ) {
-
-        const current =
-            points[i];
-
-        const next =
-            points[i + 1];
-
-
-        const midX =
-            (current.x + next.x) / 2;
-
-
-        const midY =
-            (current.y + next.y) / 2;
-
-
-        ctx.quadraticCurveTo(
-            current.x,
-            current.y,
-            midX,
-            midY
-        );
-    }
-
-
-    const last =
-        points[
-            points.length - 1
-        ];
-
-
-    ctx.lineTo(
-        last.x,
-        last.y
-    );
-
-
-    /*
-     * Thick neon outer body.
-     */
-
-    ctx.lineCap = "round";
-
-    ctx.lineJoin = "round";
-
-    ctx.lineWidth =
-        cellSize * .68;
-
-
-    ctx.shadowColor =
-        "#00f7ff";
-
-    ctx.shadowBlur =
-        18;
-
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            canvasSize,
-            canvasSize
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "#00f7ff"
-    );
-
-
-    gradient.addColorStop(
-        .45,
-        "#39ff88"
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "#00d9ff"
-    );
-
-
-    ctx.strokeStyle =
-        gradient;
-
-
-    ctx.stroke();
-
-
-    /*
-     * Darker inner stripe gives the
-     * snake depth and dimension.
-     */
-
-    ctx.shadowBlur = 0;
-
-    ctx.lineWidth =
-        cellSize * .42;
-
-
-    const innerGradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            canvasSize,
-            canvasSize
-        );
-
-
-    innerGradient.addColorStop(
-        0,
-        "#00aeb8"
-    );
-
-
-    innerGradient.addColorStop(
-        .5,
-        "#20c96d"
-    );
-
-
-    innerGradient.addColorStop(
-        1,
-        "#00a6c7"
-    );
-
-
-    ctx.strokeStyle =
-        innerGradient;
-
-
-    ctx.stroke();
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   SNAKE HIGHLIGHTS
-   ========================================================= */
-
-function drawSnakeHighlights() {
-
-    ctx.save();
-
-
-    /*
-     * Small glowing scales/highlights
-     * along the snake body.
-     */
-
-    for (
-        let i = 1;
-        i < snake.length - 1;
-        i += 2
-    ) {
-
-        const segment =
-            snake[i];
-
-
-        const x =
-            segment.x *
-            cellSize +
-            cellSize / 2;
-
-
-        const y =
-            segment.y *
-            cellSize +
-            cellSize / 2;
-
-
-        ctx.fillStyle =
-            "rgba(255,255,255,.45)";
-
-
-        ctx.shadowColor =
-            "#ffffff";
-
-        ctx.shadowBlur = 5;
-
-
-        ctx.beginPath();
-
-        ctx.arc(
-            x - cellSize * .10,
-            y - cellSize * .10,
-            cellSize * .045,
-            0,
-            Math.PI * 2
-        );
-
-        ctx.fill();
-    }
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   SNAKE HEAD
-   ========================================================= */
-
-function drawSnakeHead() {
-
-    const head =
-        snake[0];
-
-
-    const x =
-        head.x *
-        cellSize +
-        cellSize / 2;
-
-
-    const y =
-        head.y *
-        cellSize +
-        cellSize / 2;
-
-
-    const radius =
-        cellSize * .39;
-
-
-    ctx.save();
-
-
-    /*
-     * Head glow.
-     */
-
-    ctx.shadowColor =
-        "#39ff88";
-
-    ctx.shadowBlur =
-        25;
-
-
-    /*
-     * Head gradient.
-     */
-
-    const gradient =
-        ctx.createRadialGradient(
-            x - radius * .25,
-            y - radius * .25,
-            radius * .1,
-
-            x,
-            y,
-            radius
-        );
-
-
-    gradient.addColorStop(
-        0,
-        "#d7ffe8"
-    );
-
-
-    gradient.addColorStop(
-        .18,
-        "#75ffb0"
-    );
-
-
-    gradient.addColorStop(
-        .65,
-        "#39ff88"
-    );
-
-
-    gradient.addColorStop(
-        1,
-        "#0bd96d"
-    );
-
-
-    ctx.fillStyle =
-        gradient;
-
-
-    /*
-     * Round head.
-     */
-
-    ctx.beginPath();
-
-    ctx.arc(
-        x,
-        y,
-        radius,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /*
-     * Slight nose shape.
-     */
-
-    const noseX =
-        x +
-        direction.x *
-        radius *
-        .72;
-
-
-    const noseY =
-        y +
-        direction.y *
-        radius *
-        .72;
-
-
-    ctx.fillStyle =
-        "#28f47e";
-
-
-    ctx.beginPath();
-
-    ctx.arc(
-        noseX,
-        noseY,
-        radius * .42,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    drawSnakeEyes(
-        x,
-        y,
-        radius
-    );
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   SNAKE EYES
-   ========================================================= */
-
-function drawSnakeEyes(
-    x,
-    y,
-    radius
-) {
-
-    ctx.save();
-
-
-    /*
-     * Eye positions depend on
-     * snake direction.
-     */
-
-    let eye1;
-    let eye2;
-
-
-    if (
-        direction.x === 1
-    ) {
-
-        eye1 = {
-            x:
-                x + radius * .40,
-
-            y:
-                y - radius * .42
-        };
-
-
-        eye2 = {
-            x:
-                x + radius * .40,
-
-            y:
-                y + radius * .42
-        };
-
-    } else if (
-        direction.x === -1
-    ) {
-
-        eye1 = {
-            x:
-                x - radius * .40,
-
-            y:
-                y - radius * .42
-        };
-
-
-        eye2 = {
-            x:
-                x - radius * .40,
-
-            y:
-                y + radius * .42
-        };
-
-    } else if (
-        direction.y === -1
-    ) {
-
-        eye1 = {
-            x:
-                x - radius * .42,
-
-            y:
-                y - radius * .40
-        };
-
-
-        eye2 = {
-            x:
-                x + radius * .42,
-
-            y:
-                y - radius * .40
-        };
-
-    } else {
-
-        eye1 = {
-            x:
-                x - radius * .42,
-
-            y:
-                y + radius * .40
-        };
-
-
-        eye2 = {
-            x:
-                x + radius * .42,
-
-            y:
-                y + radius * .40
-        };
-    }
-
-
-    /*
-     * White eye.
-     */
-
-    [eye1, eye2].forEach(
-        eye => {
-
-            ctx.shadowColor =
-                "#ffffff";
-
-            ctx.shadowBlur = 8;
-
-            ctx.fillStyle =
-                "#ffffff";
-
-
-            ctx.beginPath();
-
-            ctx.arc(
-                eye.x,
-                eye.y,
-                radius * .18,
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fill();
-
-
-            /*
-             * Black pupil.
-             */
-
-            ctx.shadowBlur = 0;
-
-            ctx.fillStyle =
-                "#020609";
-
-
-            ctx.beginPath();
-
-            ctx.arc(
-                eye.x +
-                    direction.x *
-                    radius * .045,
-
-                eye.y +
-                    direction.y *
-                    radius * .045,
-
-                radius * .09,
-
-                0,
-                Math.PI * 2
-            );
-
-            ctx.fill();
-
-        }
-    );
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   PARTICLES
-   ========================================================= */
-
-function createParticles(
-    x,
-    y
-) {
-
-    for (
-        let i = 0;
-        i < 20;
-        i++
-    ) {
-
-        const angle =
-            Math.random() *
-            Math.PI *
-            2;
-
-
-        const speed =
-            Math.random() *
-            2.5 +
-            .8;
-
-
-        particles.push({
-
-            x: x,
-
-            y: y,
-
-            vx:
-                Math.cos(angle) *
-                speed,
-
-            vy:
-                Math.sin(angle) *
-                speed,
-
-            size:
-                Math.random() *
-                3 +
-                1,
-
-            life: 1,
-
-            decay:
-                Math.random() *
-                .035 +
-                .025
-        });
-    }
-}
-
-
-function updateParticles() {
-
-    particles.forEach(
-        particle => {
-
-            particle.x +=
-                particle.vx;
-
-            particle.y +=
-                particle.vy;
-
-
-            particle.vx *=
-                .97;
-
-            particle.vy *=
-                .97;
-
-
-            particle.life -=
-                particle.decay;
-        }
-    );
-
-
-    particles =
-        particles.filter(
-            particle =>
-                particle.life > 0
-        );
-}
-
-
-function drawParticles() {
-
-    ctx.save();
-
-
-    particles.forEach(
-        particle => {
-
-            ctx.globalAlpha =
-                particle.life;
-
-
-            ctx.fillStyle =
-                "#ff3cac";
-
-
-            ctx.shadowColor =
-                "#ff3cac";
-
-
-            ctx.shadowBlur =
-                12;
-
-
-            ctx.beginPath();
-
-
-            ctx.arc(
-                particle.x,
-                particle.y,
-                particle.size,
-                0,
-                Math.PI * 2
-            );
-
-
-            ctx.fill();
-        }
-    );
-
-
-    ctx.restore();
-}
-
-
-/* =========================================================
-   INITIALIZE
-   ========================================================= */
-
-initializeGame();
-
-
-requestAnimationFrame(
-    resizeCanvas
+   BUTTON EVENTS
+========================================================= */
+
+startButton.addEventListener(
+    "click",
+    startGame
+);
+
+pauseButton.addEventListener(
+    "click",
+    togglePause
+);
+
+restartButton.addEventListener(
+    "click",
+    restartGame
 );
 
 
 /* =========================================================
-   IDLE ANIMATION
-   ========================================================= */
+   INITIAL LOAD
+========================================================= */
 
-function animationLoop() {
+newGame();
 
-    /*
-     * Keeps the food and particles
-     * animated while the game is idle.
-     */
-
-    if (
-        !gameRunning ||
-        gamePaused
-    ) {
-
-        updateParticles();
-
-        draw();
-    }
-
-
-    requestAnimationFrame(
-        animationLoop
-    );
-}
-
-
-animationLoop();
+resize();
 
 </script>
 
 </body>
 </html>
-
